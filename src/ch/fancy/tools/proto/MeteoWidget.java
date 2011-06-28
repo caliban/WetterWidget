@@ -90,7 +90,8 @@ public class MeteoWidget extends AppWidgetProvider {
         MeteoModel model = null; 
         try
         {
-        model = new FetchData().fetch(); 
+        	
+        model = new FetchData().fetch(context); 
         }catch(Exception e )
         {
         	//make sure that this app doesn't crash.
