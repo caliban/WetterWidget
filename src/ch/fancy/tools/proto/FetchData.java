@@ -21,14 +21,31 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
-public class FetchData {
+public class FetchData  implements LocationListener {
 
-	private static final Pattern pattern = Pattern.compile("\\d{1,2}\\.gif");
+	//pattern für die gifs, (1-28).gif
+	private static final Pattern gifpattern = Pattern.compile("\\d{1,2}\\.gif");
+	private static final Pattern dayAndDatePattern  = Pattern.compile("\\w\\w\\s\\d\\d\\.\\d\\d");
+	//url für die daten abzuholen. TODO lokalisieren des de zu fr/it sofern textdaten übernommen werden. 
 	private static final String URL = "http://www.meteoschweiz.admin.ch/web/de/wetter/detailprognose/lokalprognose.html?language=de&plz={0}&x=0&y=0";
-
+	
+	private double latitude;
+	
+	private double longitude;
+	
+	public FetchData(Context context)
+	{
+		//register this fetchdata as a location listener
+		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+		//update jede stunde, sofernt die position um mehr als 2000 meter verschoben ist
+		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3600000, 2000, this);
+	}
+	
 	public MeteoModel fetch(Context context) {
 		// <img class="symbol" title="teilweise sonnig" alt="teilweise sonnig"
 		// src="/images/weathersymbols/3.gif">
@@ -38,35 +55,53 @@ public class FetchData {
 		// String expression = "blubb";
 		// XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
-			String[] temp = new String[5];
-
-			String html = convertStreamToString(getData(context));
+			String[] gifs = new String[5];
+			String[] days = new String[5];
+			Address address = findPlz(context); 
+			String html = convertStreamToString(getData(context, address.getPostalCode()));
 			// NodeList nodes = (NodeList) xpath.evaluate(expression, new
 			// InputSource(getData()), XPathConstants.NODESET);
+			//there is a 0.gif lurking around, remove it. 
 			html = html.replace("/images/0.gif", "");
-			Matcher matcher = pattern.matcher(html);
+			Matcher matcher = gifpattern.matcher(html);
 			for (int i = 0; i < 5; i++) {
 				matcher.find();
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
 				// String text = node.getTextContent();
-				Log.d("fetchdata", "||||" + match);
-				temp[i] = match;
+				Log.d("########################### fetchdata gifs ", "||||" + match);
+				gifs[i] = match;
 
 			}
-			return new MeteoModel(temp);
+			matcher = dayAndDatePattern.matcher(html);
+			for (int i = 0; i < 5; i++) {
+				matcher.find();
+				String match = matcher.group();
+				// Node node = nodes.item(i).getFirstChild();
+				// String text = node.getTextContent();
+				Log.d("########################### fetchdata days", "||||" + match);
+				days[i] = match;
+
+			}
+			MeteoModel model = new MeteoModel(gifs, days);
+			model.setLocation(address.getLocality());
+			model.setZip(address.getPostalCode());
+			return model; 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Log.e("error?", e.getMessage());
+			Log.e("error, IN MY APP?", e.getMessage());
 			e.printStackTrace();
 			throw new IllegalStateException(e);
 		}
 
 	}
 
-	private InputStream getData(Context context) throws IOException {
+	/**
+	 * fetch the data from meteo. apache httpclient used. 
+	 */
+	private InputStream getData(Context context, String zip) throws IOException {
 		HttpClient client = new DefaultHttpClient();
-		String tempUrl = MessageFormat.format(URL, findPlz(context));
+		String tempUrl = MessageFormat.format(URL, zip);
 		HttpGet first = new HttpGet(tempUrl);
 
 		try {
@@ -74,13 +109,15 @@ public class FetchData {
 			return response.getEntity().getContent();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			Log.e("error?", e.getMessage());
 			e.printStackTrace();
 			throw new IllegalStateException(e);
 		}
 	}
 
+	/**
+	 * converts a stream to a string. 
+	 */
 	public String convertStreamToString(InputStream is) throws IOException {
 
 		if (is != null) {
@@ -105,20 +142,46 @@ public class FetchData {
 		}
 	}
 	
-	public String findPlz(Context context) throws IOException
+	/**
+	 * attempt to get a position and get the nearest address
+	 */
+	public Address findPlz(Context context) throws IOException
 	{
 		Geocoder coder = new Geocoder(context);
 		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE); 
+		// ungefährer ort reicht, kein gps nötig
 		Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(location == null)
+		if(location != null)
 		{
-			//bah, didn't work 
-			return "3000";
+			//current location is null, fallback to stored location. 
+			longitude = location.getLongitude();
+			latitude = location.getLatitude(); 
 		}
-		double longitude = location.getLongitude();
-		double latitude = location.getLatitude();
 		List<Address> list = coder.getFromLocation(latitude, longitude, 1);
-		Log.d("meteowidget", "nearest plz is: "+list.get(0).getPostalCode());
-		return list.get(0).getPostalCode();
+		Log.d("meteowidget", "########################### nearest plz is: "+list.get(0).getPostalCode());
+		return list.get(0);
+	}
+	/**
+	 * notify with a new location
+	 */
+	public void onLocationChanged(Location arg0) {
+		//update the current position. 
+		Log.d("meteowidget", "########################### got update long: "+arg0.getLongitude() +" lat: "+arg0.getLatitude());
+		this.latitude = arg0.getLatitude();
+		this.longitude = arg0.getLongitude();
+		
+	}
+
+	public void onProviderDisabled(String provider) {
+		//bö?
+		
+	}
+
+	public void onProviderEnabled(String provider) {
+		//bö?
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		//bö?
 	}
 }

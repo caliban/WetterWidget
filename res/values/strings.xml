@@ -3,4 +3,6 @@
     <string name="app_name">Meteo Widget</string>
     
     <string name ="dummy">lo and behold</string>
+    <string name ="zip">zip</string>
+    <string name ="place">place</string>
 </resources>

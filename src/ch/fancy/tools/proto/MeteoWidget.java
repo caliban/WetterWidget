@@ -19,7 +19,8 @@ public class MeteoWidget extends AppWidgetProvider {
 	public static Context context;
 	public static AppWidgetManager appWidgetManager;
 	public static int appWidgetIds[];
-	public static final Map<String, Integer> PICMAP = initMap(); 
+	public static final Map<String, Integer> PICMAP = initMap();
+	private FetchData fetcher; 
 	
 	private static Map<String, Integer> initMap()
 	{
@@ -66,7 +67,7 @@ public class MeteoWidget extends AppWidgetProvider {
 	    MeteoWidget.appWidgetManager = appWidgetManager;
 	    MeteoWidget.appWidgetIds = appWidgetIds;
 	    
-		Log.i("PXR", "onUpdate");
+		Log.i("meteowidget", "###########################onUpdate");
 		
 		final int N = appWidgetIds.length;
         for (int i=0; i<N; i++) {
@@ -78,7 +79,7 @@ public class MeteoWidget extends AppWidgetProvider {
     }
 
 	
-	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+	void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId) {
                 
         Intent intent = new Intent(context, UpdateService.class);
@@ -90,19 +91,31 @@ public class MeteoWidget extends AppWidgetProvider {
         MeteoModel model = null; 
         try
         {
+        	if(fetcher == null)
+        	{
+        		fetcher = new FetchData(context); 
+        	}
         	
-        model = new FetchData().fetch(context); 
+        model = fetcher.fetch(context); 
         }catch(Exception e )
         {
         	//make sure that this app doesn't crash.
         	Log.e("meteowidget", "failed with exc: ", e);
         	model = new MeteoModel(); 
         }
+        //update all fields
         remoteViews.setImageViewResource(R.id.widget_day1, PICMAP.get(model.getDay1()));
         remoteViews.setImageViewResource(R.id.widget_day2, PICMAP.get(model.getDay2()));
         remoteViews.setImageViewResource(R.id.widget_day3, PICMAP.get(model.getDay3()));
         remoteViews.setImageViewResource(R.id.widget_day4, PICMAP.get(model.getDay4()));
         remoteViews.setImageViewResource(R.id.widget_day5, PICMAP.get(model.getDay5()));
+        remoteViews.setTextViewText(R.id.date1, model.getDateDay1());
+        remoteViews.setTextViewText(R.id.date2, model.getDateDay2());
+        remoteViews.setTextViewText(R.id.date3, model.getDateDay3());
+        remoteViews.setTextViewText(R.id.date4, model.getDateDay4());
+        remoteViews.setTextViewText(R.id.date5, model.getDateDay5());
+        remoteViews.setTextViewText(R.id.place, model.getLocation());
+        remoteViews.setTextViewText(R.id.zip, model.getZip());
  
         // Tell the widget manager
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
