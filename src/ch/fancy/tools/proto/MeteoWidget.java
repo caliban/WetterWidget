@@ -104,16 +104,15 @@ public class MeteoWidget extends AppWidgetProvider {
         	model = new MeteoModel(); 
         }
         //update all fields
-        remoteViews.setImageViewResource(R.id.widget_day1, PICMAP.get(model.getDay1()));
-        remoteViews.setImageViewResource(R.id.widget_day2, PICMAP.get(model.getDay2()));
-        remoteViews.setImageViewResource(R.id.widget_day3, PICMAP.get(model.getDay3()));
-        remoteViews.setImageViewResource(R.id.widget_day4, PICMAP.get(model.getDay4()));
-        remoteViews.setImageViewResource(R.id.widget_day5, PICMAP.get(model.getDay5()));
-        remoteViews.setTextViewText(R.id.date1, model.getDateDay1());
-        remoteViews.setTextViewText(R.id.date2, model.getDateDay2());
-        remoteViews.setTextViewText(R.id.date3, model.getDateDay3());
-        remoteViews.setTextViewText(R.id.date4, model.getDateDay4());
-        remoteViews.setTextViewText(R.id.date5, model.getDateDay5());
+        int baseSym = R.id.widget_day1; 
+        int baseDate = R.id.date1;
+        int baseTemp = R.id.temp1; 
+        for(int i = 0; i<6; i++)
+        {
+        	remoteViews.setImageViewResource(baseSym+i, PICMAP.get(model.getSyms()[i]));
+        	remoteViews.setTextViewText(baseDate+i, model.getDates()[i]);
+        	remoteViews.setTextViewText(baseTemp+i, model.getTemps()[i]);
+        }
         remoteViews.setTextViewText(R.id.place, model.getLocation());
         remoteViews.setTextViewText(R.id.zip, model.getZip());
  

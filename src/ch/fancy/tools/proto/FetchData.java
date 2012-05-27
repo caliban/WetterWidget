@@ -31,6 +31,8 @@ public class FetchData  implements LocationListener {
 	//pattern für die gifs, (1-28).gif
 	private static final Pattern gifpattern = Pattern.compile("\\d{1,2}\\.gif");
 	private static final Pattern dayAndDatePattern  = Pattern.compile("\\w\\w\\s\\d\\d\\.\\d\\d");
+	private static final Pattern tempPattern = Pattern.compile("\\d{1,2} \\| \\d{1,2} &deg;C");
+
 	//url für die daten abzuholen. TODO lokalisieren des de zu fr/it sofern textdaten übernommen werden. 
 	private static final String URL = "http://www.meteoschweiz.admin.ch/web/de/wetter/detailprognose/lokalprognose.html?language=de&plz={0}&x=0&y=0";
 	
@@ -55,8 +57,9 @@ public class FetchData  implements LocationListener {
 		// String expression = "blubb";
 		// XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
-			String[] gifs = new String[5];
-			String[] days = new String[5];
+			String[] gifs = new String[6];
+			String[] days = new String[6];
+			String[] temps = new String[6];
 			Address address = findPlz(context); 
 			String html = convertStreamToString(getData(context, address.getPostalCode()));
 			// NodeList nodes = (NodeList) xpath.evaluate(expression, new
@@ -64,7 +67,7 @@ public class FetchData  implements LocationListener {
 			//there is a 0.gif lurking around, remove it. 
 			html = html.replace("/images/0.gif", "");
 			Matcher matcher = gifpattern.matcher(html);
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 6; i++) {
 				matcher.find();
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
@@ -74,7 +77,7 @@ public class FetchData  implements LocationListener {
 
 			}
 			matcher = dayAndDatePattern.matcher(html);
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 6; i++) {
 				matcher.find();
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
@@ -83,7 +86,18 @@ public class FetchData  implements LocationListener {
 				days[i] = match;
 
 			}
-			MeteoModel model = new MeteoModel(gifs, days);
+			matcher = tempPattern.matcher(html);
+			for (int i = 0; i < 6; i++) {
+				matcher.find();
+				String match = matcher.group();
+				// Node node = nodes.item(i).getFirstChild();
+				// String text = node.getTextContent();
+				Log.d("########################### fetchdata temps", "||||" + match);
+				temps[i] = match.replace("&deg;", "°");
+
+			}
+			
+			MeteoModel model = new MeteoModel(gifs, days, temps);
 			model.setLocation(address.getLocality());
 			model.setZip(address.getPostalCode());
 			return model; 
@@ -158,7 +172,14 @@ public class FetchData  implements LocationListener {
 			latitude = location.getLatitude(); 
 		}
 		List<Address> list = coder.getFromLocation(latitude, longitude, 1);
-		Log.d("meteowidget", "########################### nearest plz is: "+list.get(0).getPostalCode());
+		if(!list.isEmpty())
+		{
+			Log.d("meteowidget", "########################### nearest plz is: "+list.get(0).getPostalCode());
+		}
+		else
+		{
+			Log.d("meteowidget", "adress list is empty");
+		}
 		return list.get(0);
 	}
 	/**
