@@ -1,173 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/LinearLayout01" android:layout_height="150dp"
-	android:layout_marginTop="5dp"
-	android:layout_marginBottom="5dp"
-	android:layout_width="320dp" android:orientation="vertical"
-	android:background="@android:color/background_dark">
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/LinearLayout02" android:layout_height="50dp"
-		android:layout_width="320dp" android:orientation="horizontal">
-		<TextView 
-			android:layout_marginTop="10dp"
-			android:layout_marginLeft="10dp"
-			android:textSize="30dp"
-			android:textStyle="bold"
-		 	android:layout_height="50dp"
-		 	android:id="@+id/zip"
-		 	android:layout_width="80dp" 
-		 	android:text="@string/zip"/>
+    android:id="@+id/LinearLayout01"
+    android:layout_width="320dp"
+    android:layout_height="160dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:background="@android:color/background_dark"
+    android:orientation="vertical" >
 
-		<TextView 
-			android:layout_marginTop="10dp"
-			android:textSize="30dp"
-			android:textStyle="bold"
-			android:id="@+id/place" 
-			android:text="@string/place"
-			android:layout_height="50dp" 
-			android:layout_width="240dp"
-			/>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLayout02"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
 
-	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/LinearLayout03" android:layout_height="25dp"
-		android:layout_width="320dp" android:orientation="horizontal">
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date1"
-		 	android:layout_width="50dp" />
+        <TextView
+            android:id="@+id/zip"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/zip"
+            android:textSize="30dp"
+            android:textStyle="bold" />
 
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date2"
-		 	android:layout_width="50dp" 
-			/>
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date3"
-		 	android:layout_width="50dp" 
-/>
+        <TextView
+            android:id="@+id/place"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/place"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date4"
-		 	android:layout_width="50dp" />
-			/>
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date5"
-		 	android:layout_width="50dp" />
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/date6"
-		 	android:layout_width="50dp" />
-	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/LinearLayout04" android:layout_height="25dp"
-		android:layout_width="320dp" android:orientation="horizontal">
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp1"
-		 	android:layout_width="50dp" />
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLayout03"
+        android:layout_width="320dp"
+        android:layout_height="25dp"
+        android:orientation="horizontal" >
 
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp2"
-		 	android:layout_width="50dp" 
-			/>
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp3"
-		 	android:layout_width="50dp" 
-/>
+        <TextView
+            android:id="@+id/date1"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
 
-		<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp4"
-		 	android:layout_width="50dp" />
-			/>
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp5"
-		 	android:layout_width="50dp" />
-			<TextView 
-			android:layout_marginTop="5dp"
-			android:layout_marginLeft="3dp"
-			android:textSize="12dp"
-		 	android:layout_height="20dp"
-		 	android:id="@+id/temp6"
-		 	android:layout_width="50dp" />
-	</LinearLayout>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/LinearLayout05" 
-			android:layout_height="55dp"
-			android:layout_width="320dp" 
-			android:orientation="horizontal">
+        <TextView
+            android:id="@+id/date2"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
 
-		<ImageView 
-			android:id="@+id/widget_day1" 
-			android:src="@drawable/icon"
-			android:layout_width="53dp" 
-			android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
-		<ImageView android:id="@+id/widget_day2" 
-		android:src="@drawable/icon"
-			android:layout_width="53dp" 
-			android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
-		<ImageView 
-		android:layout_marginBottom="5dp"
-		android:id="@+id/widget_day3" 
-		android:src="@drawable/icon"
-			android:layout_width="53dp" 
-			android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
-		<ImageView 
-		android:id="@+id/widget_day4" 
-		android:src="@drawable/icon"
-			android:layout_width="53dp" 
-			android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
-		<ImageView android:id="@+id/widget_day5" android:src="@drawable/icon"
-			android:layout_width="53dp" android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
-		<ImageView android:id="@+id/widget_day6" android:src="@drawable/icon"
-			android:layout_width="53dp" android:layout_height="53dp"
-			android:gravity="center_vertical|center_horizontal" />
+        <TextView
+            android:id="@+id/date3"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
 
+        <TextView
+            android:id="@+id/date4"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
 
-	</LinearLayout>
+        <TextView
+            android:id="@+id/date5"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/date6"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLayout04"
+        android:layout_width="320dp"
+        android:layout_height="25dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/temp1"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/temp2"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/temp3"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/temp4"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/temp5"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/temp6"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="5dp"
+            android:textSize="11dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LinearLayout05"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/widget_day1"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+
+        <ImageView
+            android:id="@+id/widget_day2"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+
+        <ImageView
+            android:id="@+id/widget_day3"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+
+        <ImageView
+            android:id="@+id/widget_day4"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+
+        <ImageView
+            android:id="@+id/widget_day5"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+
+        <ImageView
+            android:id="@+id/widget_day6"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/icon" />
+    </LinearLayout>
+
 </LinearLayout>

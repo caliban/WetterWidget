@@ -20,11 +20,12 @@ public class MeteoWidget extends AppWidgetProvider {
 	public static AppWidgetManager appWidgetManager;
 	public static int appWidgetIds[];
 	public static final Map<String, Integer> PICMAP = initMap();
-	private FetchData fetcher; 
-	
-	private static Map<String, Integer> initMap()
-	{
-		Map<String, Integer> map = new HashMap<String, Integer>(); 
+	public static boolean init = false;
+	private FetchData fetcher;
+
+	private static Map<String, Integer> initMap() {
+		//no guava in android? what a shame. 
+		Map<String, Integer> map = new HashMap<String, Integer>();
 		map.put("1.gif", R.drawable.img1);
 		map.put("2.gif", R.drawable.img2);
 		map.put("3.gif", R.drawable.img3);
@@ -53,87 +54,97 @@ public class MeteoWidget extends AppWidgetProvider {
 		map.put("26.gif", R.drawable.img26);
 		map.put("27.gif", R.drawable.img27);
 		map.put("28.gif", R.drawable.img28);
-		return map; 
+		return map;
 	}
-	
+
 	@Override
-    public void onUpdate( Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds )    {		
-		if (null == context) context = MeteoWidget.context;
-	    if (null == appWidgetManager) appWidgetManager = MeteoWidget.appWidgetManager;
-	    if (null == appWidgetIds) appWidgetIds = MeteoWidget.appWidgetIds;
+	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
+			int[] appWidgetIds) {
+		if (null == context)
+			context = MeteoWidget.context;
+		if (null == appWidgetManager)
+			appWidgetManager = MeteoWidget.appWidgetManager;
+		if (null == appWidgetIds)
+			appWidgetIds = MeteoWidget.appWidgetIds;
 
-	    MeteoWidget.Widget = this;
-	    MeteoWidget.context = context;
-	    MeteoWidget.appWidgetManager = appWidgetManager;
-	    MeteoWidget.appWidgetIds = appWidgetIds;
-	    
+		MeteoWidget.Widget = this;
+		MeteoWidget.context = context;
+		MeteoWidget.appWidgetManager = appWidgetManager;
+		MeteoWidget.appWidgetIds = appWidgetIds;
+
 		Log.i("meteowidget", "###########################onUpdate");
-		
-		final int N = appWidgetIds.length;
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];  
-            
-            updateAppWidget(context,appWidgetManager, appWidgetId);            
-        }
-        
-    }
 
-	
+		final int N = appWidgetIds.length;
+		for (int i = 0; i < N; i++) {
+			int appWidgetId = appWidgetIds[i];
+
+			updateAppWidget(context, appWidgetManager, appWidgetId);
+		}
+
+	}
+
 	void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-            int appWidgetId) {
-                
-        Intent intent = new Intent(context, UpdateService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
-        
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
-        remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent);
-        
-        MeteoModel model = null; 
-        try
-        {
-        	if(fetcher == null)
-        	{
-        		fetcher = new FetchData(context); 
-        	}
-        	
-        model = fetcher.fetch(context); 
-        }catch(Exception e )
-        {
-        	//make sure that this app doesn't crash.
-        	Log.e("meteowidget", "failed with exc: ", e);
-        	model = new MeteoModel(); 
-        }
-        //update all fields
-        int baseSym = R.id.widget_day1; 
-        int baseDate = R.id.date1;
-        int baseTemp = R.id.temp1; 
-        for(int i = 0; i<6; i++)
-        {
-        	remoteViews.setImageViewResource(baseSym+i, PICMAP.get(model.getSyms()[i]));
-        	remoteViews.setTextViewText(baseDate+i, model.getDates()[i]);
-        	remoteViews.setTextViewText(baseTemp+i, model.getTemps()[i]);
-        }
-        remoteViews.setTextViewText(R.id.place, model.getLocation());
-        remoteViews.setTextViewText(R.id.zip, model.getZip());
- 
-        // Tell the widget manager
-        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-    }
-	
-	
-	
-	
+			int appWidgetId) {
+
+		Intent intent = new Intent(context, UpdateService.class);
+		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
+				intent, 0);
+
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+				R.layout.widget);
+		remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent);
+
+		MeteoModel model = null;
+		try {
+			if (fetcher == null) {
+				fetcher = new FetchData(context);
+			}
+
+			model = fetcher.fetch(context);
+		} catch (Exception e) {
+			// make sure that this app doesn't crash.
+			Log.e("meteowidget", "failed with exc: ", e);
+			if (!init) {
+				Log.d("meteowidget","first run crash. will revert to default model");
+				// only make a default model for the first run of this widget
+				model = new MeteoModel();
+			}
+		}
+		//mark the widget as started. 
+		//all following updates with crashes will revert to the latest model
+		init = true;
+		// update all fields (only with a valid model)
+		if (model != null) {
+			int baseSym = R.id.widget_day1;
+			int baseDate = R.id.date1;
+			int baseTemp = R.id.temp1;
+			for (int i = 0; i < 6; i++) {
+				//update remoteview
+				remoteViews.setImageViewResource(baseSym + i,
+						PICMAP.get(model.getSyms()[i]));
+				remoteViews.setTextViewText(baseDate + i, model.getDates()[i]);
+				remoteViews.setTextViewText(baseTemp + i, model.getTemps()[i]);
+			}
+			remoteViews.setTextViewText(R.id.place, model.getLocation());
+			remoteViews.setTextViewText(R.id.zip, model.getZip());
+
+			// Tell the widget manager
+			appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+		}
+	}
+
 	public static class UpdateService extends Service {
-        @Override
-        public void onStart(Intent intent, int startId) {
-        	MeteoWidget.Widget.onUpdate(context, appWidgetManager, appWidgetIds);
-        	Toast.makeText(context, "Update Widget", Toast.LENGTH_SHORT).show();
-        }
+		@Override
+		public void onStart(Intent intent, int startId) {
+			MeteoWidget.Widget
+					.onUpdate(context, appWidgetManager, appWidgetIds);
+			Toast.makeText(context, "Update Widget", Toast.LENGTH_SHORT).show();
+		}
 
 		@Override
 		public IBinder onBind(Intent arg0) {
 			return null;
 		}
-    }
-	
+	}
+
 }

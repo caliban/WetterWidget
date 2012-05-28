@@ -161,6 +161,9 @@ public class FetchData  implements LocationListener {
 	 */
 	public Address findPlz(Context context) throws IOException
 	{
+		Address defaultAdress = new Address(null);
+		defaultAdress.setPostalCode("3000");
+		defaultAdress.setLocality("Bern");
 		Geocoder coder = new Geocoder(context);
 		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE); 
 		// ungefährer ort reicht, kein gps nötig
@@ -175,12 +178,14 @@ public class FetchData  implements LocationListener {
 		if(!list.isEmpty())
 		{
 			Log.d("meteowidget", "########################### nearest plz is: "+list.get(0).getPostalCode());
+			return list.get(0);
 		}
 		else
 		{
 			Log.d("meteowidget", "adress list is empty");
+			return defaultAdress; 
 		}
-		return list.get(0);
+		
 	}
 	/**
 	 * notify with a new location
