@@ -19,6 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -26,28 +27,42 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-public class FetchData  implements LocationListener {
+public class FetchData implements LocationListener {
 
-	//pattern für die gifs, (1-28).gif
+	// pattern für die gifs, (1-28).gif
 	private static final Pattern gifpattern = Pattern.compile("\\d{1,2}\\.gif");
-	private static final Pattern dayAndDatePattern  = Pattern.compile("\\w\\w\\s\\d\\d\\.\\d\\d");
-	private static final Pattern tempPattern = Pattern.compile("\\d{1,2} \\| \\d{1,2} &deg;C");
+	private static final Pattern dayAndDatePattern = Pattern
+			.compile("\\w\\w\\s\\d\\d\\.\\d\\d");
+	private static final Pattern tempPattern = Pattern
+			.compile("\\d{1,2} \\| \\d{1,2} &deg;C");
 
-	//url für die daten abzuholen. TODO lokalisieren des de zu fr/it sofern textdaten übernommen werden. 
+	// url für die daten abzuholen. TODO lokalisieren des de zu fr/it sofern
+	// textdaten übernommen werden.
 	private static final String URL = "http://www.meteoschweiz.admin.ch/web/de/wetter/detailprognose/lokalprognose.html?language=de&plz={0}&x=0&y=0";
-	
+
 	private double latitude;
-	
+
 	private double longitude;
-	
-	public FetchData(Context context)
-	{
-		//register this fetchdata as a location listener
-		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-		//update jede stunde, sofernt die position um mehr als 2000 meter verschoben ist
-		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3600000, 2000, this);
+
+	public FetchData(Context context) {
+		// register this fetchdata as a location listener
+		LocationManager locationManager = (LocationManager) context
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+		String provider = locationManager.getBestProvider(criteria, true);
+
+		if (provider == null) {
+			Log.e("meteowidget", "No location provider found!");
+			return;
+		}
+		// update jede stunde, sofernt die position um mehr als 2000 meter
+		// verschoben ist
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3600000,
+				2000, this);
 	}
-	
+
 	public MeteoModel fetch(Context context) {
 		// <img class="symbol" title="teilweise sonnig" alt="teilweise sonnig"
 		// src="/images/weathersymbols/3.gif">
@@ -60,11 +75,12 @@ public class FetchData  implements LocationListener {
 			String[] gifs = new String[6];
 			String[] days = new String[6];
 			String[] temps = new String[6];
-			Address address = findPlz(context); 
-			String html = convertStreamToString(getData(context, address.getPostalCode()));
+			Address address = findPlz(context);
+			String html = convertStreamToString(getData(context,
+					address.getPostalCode()));
 			// NodeList nodes = (NodeList) xpath.evaluate(expression, new
 			// InputSource(getData()), XPathConstants.NODESET);
-			//there is a 0.gif lurking around, remove it. 
+			// there is a 0.gif lurking around, remove it.
 			html = html.replace("/images/0.gif", "");
 			Matcher matcher = gifpattern.matcher(html);
 			for (int i = 0; i < 6; i++) {
@@ -72,7 +88,8 @@ public class FetchData  implements LocationListener {
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
 				// String text = node.getTextContent();
-				Log.d("########################### fetchdata gifs ", "||||" + match);
+				Log.d("########################### fetchdata gifs ", "||||"
+						+ match);
 				gifs[i] = match;
 
 			}
@@ -82,7 +99,8 @@ public class FetchData  implements LocationListener {
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
 				// String text = node.getTextContent();
-				Log.d("########################### fetchdata days", "||||" + match);
+				Log.d("########################### fetchdata days", "||||"
+						+ match);
 				days[i] = match;
 
 			}
@@ -92,17 +110,17 @@ public class FetchData  implements LocationListener {
 				String match = matcher.group();
 				// Node node = nodes.item(i).getFirstChild();
 				// String text = node.getTextContent();
-				Log.d("########################### fetchdata temps", "||||" + match);
+				Log.d("########################### fetchdata temps", "||||"
+						+ match);
 				temps[i] = match.replace("&deg;", "°");
 
 			}
-			
+
 			MeteoModel model = new MeteoModel(gifs, days, temps);
 			model.setLocation(address.getLocality());
 			model.setZip(address.getPostalCode());
-			return model; 
+			return model;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			Log.e("error, IN MY APP?", e.getMessage());
 			e.printStackTrace();
 			throw new IllegalStateException(e);
@@ -111,7 +129,7 @@ public class FetchData  implements LocationListener {
 	}
 
 	/**
-	 * fetch the data from meteo. apache httpclient used. 
+	 * fetch the data from meteo. apache httpclient used.
 	 */
 	private InputStream getData(Context context, String zip) throws IOException {
 		HttpClient client = new DefaultHttpClient();
@@ -130,7 +148,7 @@ public class FetchData  implements LocationListener {
 	}
 
 	/**
-	 * converts a stream to a string. 
+	 * converts a stream to a string.
 	 */
 	public String convertStreamToString(InputStream is) throws IOException {
 
@@ -155,59 +173,68 @@ public class FetchData  implements LocationListener {
 			return "";
 		}
 	}
-	
+
 	/**
 	 * attempt to get a position and get the nearest address
 	 */
-	public Address findPlz(Context context) throws IOException
-	{
+	public Address findPlz(Context context) throws IOException {
 		Address defaultAdress = new Address(null);
 		defaultAdress.setPostalCode("3000");
 		defaultAdress.setLocality("Bern");
 		Geocoder coder = new Geocoder(context);
-		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE); 
-		// ungefährer ort reicht, kein gps nötig
-		Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(location != null)
-		{
-			//current location is null, fallback to stored location. 
-			longitude = location.getLongitude();
-			latitude = location.getLatitude(); 
+		LocationManager locationManager = (LocationManager) context
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+		String provider = locationManager.getBestProvider(criteria, true);
+
+		if (provider == null) {
+			Log.e("meteowidget", "No location provider found!");
+			return defaultAdress;
+		}
+		// update jede stunde, sofernt die position um mehr als 2000 meter
+		// verschoben ist
+		Location lastLocation = locationManager.getLastKnownLocation(provider);
+		if (lastLocation != null) {
+			// current location is null, fallback to stored location.
+			longitude = lastLocation.getLongitude();
+			latitude = lastLocation.getLatitude();
 		}
 		List<Address> list = coder.getFromLocation(latitude, longitude, 1);
-		if(!list.isEmpty())
-		{
-			Log.d("meteowidget", "########################### nearest plz is: "+list.get(0).getPostalCode());
+		if (!list.isEmpty()) {
+			Log.d("meteowidget", "########################### nearest plz is: "
+					+ list.get(0).getPostalCode());
 			return list.get(0);
-		}
-		else
-		{
+		} else {
 			Log.d("meteowidget", "adress list is empty");
-			return defaultAdress; 
+			return defaultAdress;
 		}
-		
+
 	}
+
 	/**
 	 * notify with a new location
 	 */
 	public void onLocationChanged(Location arg0) {
-		//update the current position. 
-		Log.d("meteowidget", "########################### got update long: "+arg0.getLongitude() +" lat: "+arg0.getLatitude());
+		// update the current position.
+		Log.d("meteowidget", "########################### got update long: "
+				+ arg0.getLongitude() + " lat: " + arg0.getLatitude());
 		this.latitude = arg0.getLatitude();
 		this.longitude = arg0.getLongitude();
-		
+
 	}
 
 	public void onProviderDisabled(String provider) {
-		//bö?
-		
+		// bö?
+
 	}
 
 	public void onProviderEnabled(String provider) {
-		//bö?
+		// bö?
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		//bö?
+		// bö?
 	}
 }

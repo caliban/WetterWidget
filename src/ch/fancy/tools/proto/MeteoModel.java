@@ -32,6 +32,8 @@ public class MeteoModel {
 		this.symboles = gifs; 
 		this.dates = days; 
 		this.temps = temps; 
+		//heute einsetzen:
+		days[0] = "heute";
 	}
 
 	public String[] getDates()
