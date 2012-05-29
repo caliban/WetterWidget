@@ -59,7 +59,7 @@ public class FetchData implements LocationListener {
 		}
 		// update jede stunde, sofernt die position um mehr als 2000 meter
 		// verschoben ist
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3600000,
+		locationManager.requestLocationUpdates(provider, 3600000,
 				2000, this);
 	}
 
@@ -201,6 +201,7 @@ public class FetchData implements LocationListener {
 			longitude = lastLocation.getLongitude();
 			latitude = lastLocation.getLatitude();
 		}
+		//suspect to ioexception... TODO investigate
 		List<Address> list = coder.getFromLocation(latitude, longitude, 1);
 		if (!list.isEmpty()) {
 			Log.d("meteowidget", "########################### nearest plz is: "

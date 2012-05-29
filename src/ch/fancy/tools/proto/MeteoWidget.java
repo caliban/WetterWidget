@@ -109,6 +109,10 @@ public class MeteoWidget extends AppWidgetProvider {
 				// only make a default model for the first run of this widget
 				model = new MeteoModel();
 			}
+			else
+			{
+				Log.d("meteowidget", "crashed, but recovering with old model");
+			}
 		}
 		//mark the widget as started. 
 		//all following updates with crashes will revert to the latest model
